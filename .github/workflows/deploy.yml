@@ -1,0 +1,30 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: npm install, build
+        run: |
+          cd blog-group
+          npm run build
