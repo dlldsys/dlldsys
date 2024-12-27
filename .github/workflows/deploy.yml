@@ -20,7 +20,6 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
-
 jobs:
   deploy:
     name: Deploy
@@ -43,24 +42,21 @@ jobs:
         run: |
           cd blog-group
           npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
 
-  # Deployment job
-  deploy:
-    environment:
-    name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./dist"
+      - id: deployment
         uses: actions/deploy-pages@v4
+
+  # # Deployment job
+  # deploy:
+  #   environment:
+  #   name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v4
