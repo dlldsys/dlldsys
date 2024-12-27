@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-
+import { Injectable } from "@angular/core";
+@Injectable({ providedIn: 'root' })
 export class BaseHttpService {
-    baseUrl: string = 'https://blog.dlld0319.asia/api/';
+    baseUrl: string = 'http://localhost:4200/api/';
     httpOptions = {
         headers: new HttpHeaders({
             'Content-Type': 'application/json',
@@ -17,7 +18,7 @@ export class BaseHttpService {
     //const ='https://blog.dlld0319.asia/api/articles/list';
     getArticlesList() {
         const url=this.baseUrl+'articles/list';
-        return this.http.post(url, {  headers: this.httpOptions.headers });
+        return this.http.post(url,null ,{  headers: this.httpOptions.headers });
     }
 
 }
