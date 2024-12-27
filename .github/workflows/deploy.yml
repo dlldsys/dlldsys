@@ -50,8 +50,6 @@ jobs:
           path: "./blog-group/dist/blog-group/browser"
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/master' }}
-    needs: build
     permissions:
       contents: read
       pages: write
