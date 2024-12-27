@@ -44,10 +44,27 @@ jobs:
           npm i
           npm run build
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: "./blog-group/dist/blog-group/browser"
-      - id: deployment
+          path: 'build'
+
+  deploy:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    needs: build
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
 
   # # Deployment job
