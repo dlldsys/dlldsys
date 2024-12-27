@@ -46,7 +46,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: "./blog-group/dist/blog-group/browser"
       - id: deployment
         uses: actions/deploy-pages@v4
 
