@@ -50,6 +50,7 @@ jobs:
           path: "./blog-group/dist/blog-group/browser"
 
   deploy:
+    needs: build
     permissions:
       contents: read
       pages: write
