@@ -78,3 +78,11 @@ nz-content {
   background: #fff;
   height: 100%;
 }
+.open {
+  height: 300px;
+  position: relative;
+}
+nz-float-button-group,
+nz-float-button {
+  position: absolute;
+}

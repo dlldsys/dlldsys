@@ -50,3 +50,17 @@
     </nz-content>
   </nz-layout>
 </nz-layout>
+
+
+<div class="open" (click)="openFloatButton()">
+  <nz-float-button-group [nzIcon]="icon" [nzOpen]="isOpen" nzType="primary" nzTrigger="hover" style="right: 24px">
+    <nz-float-button [nzIcon]="inner"></nz-float-button>
+    <nz-float-button [nzIcon]="inner"></nz-float-button>
+  </nz-float-button-group>
+  <ng-template #icon>
+   1
+  </ng-template>
+  <ng-template #inner>
+    1
+  </ng-template>
+</div>
