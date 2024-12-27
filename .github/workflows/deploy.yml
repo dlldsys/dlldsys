@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "build"
+          path: "./blog-group/dist/blog-group/browser"
 
   deploy:
     if: ${{ github.ref == 'refs/heads/master' }}
