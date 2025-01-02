@@ -53,11 +53,10 @@
               ],
               "outputHashing": "all"
             },
-            "development":{
-              "extractLicenses": false,
-              "sourceMap": true,
+            "development": {
               "optimization": false,
-              "namedChunks": true
+              "extractLicenses": false,
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
