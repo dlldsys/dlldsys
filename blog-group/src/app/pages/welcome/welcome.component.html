@@ -1,1 +1,16 @@
-<p>welcome works!</p>
+<nz-table #basicTable [nzData]="list">
+    <thead>
+      <tr>
+        <th nzWidth="220px">标题</th>
+        <th >内容</th>
+        <th nzWidth="200px">创建时间</th>
+        <th nzWidth="100px">操作</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{data.title}}</td>
+        <td>{{contentFormat(data.content)}}</td>
+        <td>{{data.createTime | date: 'yyyy-MM-dd HH:mm'}}</td>
+      </tr>
+    </tbody>
+  </nz-table>
