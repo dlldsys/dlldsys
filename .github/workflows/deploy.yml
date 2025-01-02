@@ -45,6 +45,7 @@ jobs:
           npm run build
           cd ..
           cp proxy.conf.json ./blog-group/dist/blog-group/browser
+          cd blog-group
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
