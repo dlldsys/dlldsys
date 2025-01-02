@@ -43,7 +43,7 @@ jobs:
           cd blog-group
           npm i
           npm run build
-          cd..
+          cd ..
           cp proxy.conf.json ./blog-group/dist/blog-group/browser
 
       - name: Upload artifact
