@@ -1,14 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseHttpService } from '../../base.http.service';
-import { NzTableModule } from 'ng-zorro-antd/table';
-import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.component.html',
   styleUrl: './welcome.component.scss',
-  imports:[NzTableModule,CommonModule,DatePipe],
-  standalone: true
 })
 export class WelcomeComponent  implements OnInit{
   list:any=[];
