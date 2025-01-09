@@ -1,8 +1,0 @@
-{
-    "/api": {
-      "target": "https://blog.dlld0319.asia/",
-      "secure": false,
-      "logLevel": "debug",
-      "changeOrigin": true
-    }
-}

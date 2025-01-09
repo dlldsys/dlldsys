@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<script src="./vue.js"></script>
+<html>
+
+<head>
+    <title>Express File Upload</title>
+</head>
+
+<body>
+    <h1>Express File Upload</h1>
+    <div id="hello-vue" class="demo">
+        <form v-if="!init" method="POST" action="/upload" enctype="multipart/form-data" target="frameName">
+            <input type="file" name="myFiles" multiple />
+            <input type="submit" @click="tab()" />
+        </form>
+        <iframe v-if="!init" id="frameName" src="" frameborder="0" name="frameName"></iframe>
+        <div class="list">
+            <div v-for="(item,index) in items" :key="index">
+                <div v-if="item.type!='text'">
+                    content: {{item.content}} <div @click="download(item.content)">download</div>
+                </div>
+                <div v-else>
+                    content: {{item.content}} <div @click="copy(item.content)">copy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    const HelloVueApp = {
+        data() {
+            return {
+                message: 'Hello Vue!!',
+                items: [],
+                document,
+                init: false
+            }
+        },
+        created() {
+            this.getAllData();
+            this.document = document.querySelector('#frameName');
+
+        },
+        methods: {
+            async getAllData() {
+                var all = await fetch('./history');
+                console.log(all)
+                this.items = await all.json();
+            },
+            tab() {
+                let time = setInterval(() => {
+                    let insidedocument = document.querySelector('#frameName');
+                    if (insidedocument != this.document) {
+                        this.getAllData();
+                        setTimeout(() => {
+                            this.init = true;
+                            setTimeout(() => {
+                                this.init = false;
+                            }, 200);
+                        }, 1000);
+                        clearInterval(time);
+                    }
+                }, 100)
+            },
+            download(file){
+                location.href='/uploads/'+file;
+            },
+            copy(text){
+                navigator.clipboard.writeText(text)
+            }
+        }
+    }
+
+    Vue.createApp(HelloVueApp).mount('#hello-vue')
+</script>
+
+</html>
