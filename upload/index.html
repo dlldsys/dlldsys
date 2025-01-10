@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <script src="./vue.js"></script>
 <html>
-<meta name="viewport" content="width=device - width, initial - scale = 1, user - scalable = no">
-
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
 <head>
     <title>File Upload</title>
 </head>
@@ -30,10 +30,10 @@
             清空所有内容
             <button @click="clear()">清空</button>
         </div>
-        <form style="margin-top: 20px;" v-if="!init" id="myForm" action="">
+        <div style="margin-top: 20px;" v-if="!init" id="myForm" action="">
             <input id="param1" type="file" @change="handleFileUpload" multiple />
             <button @click="onSubmit()">上传</button>
-        </form>
+        </div>
         <div style="margin-top: 20px;">
             <input type="text" v-model="value" name="" id="">
             <button @click="settext()">保存文本</button>
@@ -66,9 +66,6 @@
         created() {
             this.getAllData();
             this.document = document.querySelector('#frameName');
-            setInterval(() => {
-                this.getAllData();
-            }, 1000)
         },
         methods: {
                 handleFileUpload(event) {
@@ -128,20 +125,21 @@
                         this.getAllData();
                     })
                 },
-                onSubmit() {
+                async onSubmit() {
                     /* json格式提交： */
                     // let formData = JSON.stringify(this.formMess);
 
                     /* formData格式提交： */
                     const formData = new FormData();
                     formData.append('myFiles', this.selectedFile);
-                    fetch('./upload?id=' + this.selectedFile.name, {
+                    console.log(this.selectedFile);
+                    var result= await fetch('./upload?id=' + this.selectedFile.name, {
                         method: 'POST',
                         body: formData
-                    }).then(res => {
-                        this.getAllData();
                     })
-                  
+                    if(result){
+                        this.getAllData();
+                    }
                 }
         } 
     }
