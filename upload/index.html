@@ -35,7 +35,9 @@
             <button @click="onSubmit()">上传</button>
         </div>
         <div style="margin-top: 20px;">
-            <input type="text" v-model="value" name="" id="">
+            <textarea v-model="value">
+
+            </textarea>
             <button @click="settext()">保存文本</button>
         </div>
         <div class="list">
@@ -44,7 +46,7 @@
                     <div @click="download(item.content)" class="action">下载</div> 文件名称: {{item.content}}
                 </div>
                 <div v-else>
-                    <div @click="copy(item.content)" class="action">复制</div> 文本内容: {{item.content?.slice(0,30)}}
+                     文本内容: {{item.content}}
                 </div>
             </div>
         </div>
@@ -101,7 +103,7 @@
                     link.click();
                 },
                 copy(text) {
-                    navigator.clipboard.writeText(text)
+                    window.clipboardData.setData('text',text);
                 },
                 settext() {
                     if (!this.value) {

@@ -1,7 +1,7 @@
 const express = require("express");
 const fileUpload = require("express-fileupload");
 const bodyParser = require('body-parser');  // 中间件，用于解析req.body
-
+const port=5432;
 const path = require("path");
 const fs=require('fs');
 const app = express();
@@ -9,8 +9,8 @@ app.use(bodyParser.json());  // 使用中间件解析JSON数据
 app.use(express.static("public"));
 app.use('/uploads',express.static("uploads"));
 app.use(fileUpload());
-app.listen(4321, () => {
-    console.log(`File upload app listening at http://localhost:4321`);
+app.listen(port, () => {
+    console.log(`File upload app listening at http://localhost:`+port);
 });
 
 
