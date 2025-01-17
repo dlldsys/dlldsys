@@ -59,7 +59,7 @@
                 <div v-if="item.type!='text'">
                     <div @click="download(item.content)" class="action">下载</div> 文件名称: {{item.content}}
                 </div>
-                <div v-else @click="copy(item.content)">  <span class="action"> 点击复制文本内容:</span><span :id="'content'+index"> {{item.content}}</span>
+                <div v-else @click="copy(item.content)">  <span class="action"> 点击复制文本内容:</span><div :id="'content'+index" v-html="(item.content?.slice(0,80)+'...').replace(/\n/g, '<br>')"> </div>
                 </div>
             </div>
         </div>
