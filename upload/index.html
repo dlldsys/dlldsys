@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <script src="./vue.js"></script>
+<script src="./clipboard.min.js"></script>
 <html>
-    <meta name="viewport"
+<meta name="viewport"
     content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+
 <head>
     <title>File Upload</title>
 </head>
@@ -20,6 +22,18 @@
         color: wheat;
         display: inline-block;
         padding: 4px 30px;
+        cursor: pointer;
+    }
+    .popContent{
+        position: absolute;
+    left: 50%;
+    top: 30%;
+    background: white;
+    padding: 40px 40px;
+    border: 1px solid skyblue;
+    border-radius: 10px;
+    background-color: #555555;
+    color: white;
     }
 </style>
 
@@ -45,15 +59,19 @@
                 <div v-if="item.type!='text'">
                     <div @click="download(item.content)" class="action">下载</div> 文件名称: {{item.content}}
                 </div>
-                <div v-else>
-                     文本内容: {{item.content}}
+                <div v-else @click="copy(item.content)">  <span class="action"> 点击复制文本内容:</span><span :id="'content'+index"> {{item.content}}</span>
                 </div>
             </div>
         </div>
         <iframe width="100%" height="60px" v-if="!init" id="frameName" src="" frameborder="0" name="frameName"></iframe>
+        <div v-if="popContent" class="popContent">
+            {{popContent}}
+        </div>
     </div>
+  
 </body>
 <script type="text/javascript">
+
     const HelloVueApp = {
         data() {
             return {
@@ -62,7 +80,9 @@
                 document,
                 init: false,
                 value: '',
-                selectedFile: null
+                selectedFile: null,
+                popContent:'',
+                timer:null
             }
         },
         created() {
@@ -70,80 +90,85 @@
             this.document = document.querySelector('#frameName');
         },
         methods: {
-                handleFileUpload(event) {
-                    this.selectedFile = event.target.files[0];
-                },
-                async getAllData() {
-                    var all = await fetch('./history');
-                    console.log(all)
-                    this.items = await all.json();
-                },
-                tab() {
-                    let time = setInterval(() => {
-                        let insidedocument = document.querySelector('#frameName');
-                        if (insidedocument != this.document) {
-                            this.getAllData();
+            handleFileUpload(event) {
+                this.selectedFile = event.target.files[0];
+            },
+            async getAllData() {
+                var all = await fetch('./history');
+                console.log(all)
+                this.items = await all.json();
+            },
+            tab() {
+                let time = setInterval(() => {
+                    let insidedocument = document.querySelector('#frameName');
+                    if (insidedocument != this.document) {
+                        this.getAllData();
+                        setTimeout(() => {
+                            this.init = true;
                             setTimeout(() => {
-                                this.init = true;
-                                setTimeout(() => {
-                                    this.init = false;
-                                    this.document = document.querySelector('#frameName');
-                                }, 200);
-                            }, 1000);
-                            clearInterval(time);
-                        }
-                    }, 100)
-                },
-                download(file) {
-                    const url = location.href + 'uploads/' + file;
-                    console.log(url);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = file;
-                    link.click();
-                },
-                copy(text) {
-                    window.clipboardData.setData('text',text);
-                },
-                settext() {
-                    if (!this.value) {
-                        return
+                                this.init = false;
+                                this.document = document.querySelector('#frameName');
+                            }, 200);
+                        }, 1000);
+                        clearInterval(time);
                     }
-                    console.log(this.value);
-                    fetch('./savetext', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            text: this.value
-                        })
-                    }).then(res => {
-                        this.getAllData();
-                    })
-                },
-                clear() {
-                    fetch('./clear').then(res => {
-                        this.getAllData();
-                    })
-                },
-                async onSubmit() {
-                    /* json格式提交： */
-                    // let formData = JSON.stringify(this.formMess);
-
-                    /* formData格式提交： */
-                    const formData = new FormData();
-                    formData.append('myFiles', this.selectedFile);
-                    console.log(this.selectedFile);
-                    var result= await fetch('./upload?id=' + this.selectedFile.name, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    if(result){
-                        this.getAllData();
-                    }
+                }, 100)
+            },
+            download(file) {
+                const url = location.href + 'uploads/' + file;
+                console.log(url);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = file;
+                link.click();
+            },
+            copy(text) { 
+                copyToClipboard(text)
+                this.popContent='已复制';
+                clearTimeout(this.timer);
+                this.timer=setTimeout(() => {
+                    this.popContent='';
+                }, 1500);
+            },
+            settext() {
+                if (!this.value) {
+                    return
                 }
-        } 
+                console.log(this.value);
+                fetch('./savetext', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: this.value
+                    })
+                }).then(res => {
+                    this.getAllData();
+                })
+            },
+            clear() {
+                fetch('./clear').then(res => {
+                    this.getAllData();
+                })
+            },
+            async onSubmit() {
+                /* json格式提交： */
+                // let formData = JSON.stringify(this.formMess);
+
+                /* formData格式提交： */
+                const formData = new FormData();
+                formData.append('myFiles', this.selectedFile);
+                console.log(this.selectedFile);
+                var result = await fetch('./upload?id=' + this.selectedFile.name, {
+                    method: 'POST',
+                    body: formData
+                })
+                if (result) {
+                    this.getAllData();
+                }
+            }
+        }
     }
     Vue.createApp(HelloVueApp).mount('#hello-vue')
 </script>
