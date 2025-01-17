@@ -159,7 +159,6 @@
                 /* formData格式提交： */
                 const formData = new FormData();
                 formData.append('myFiles', this.selectedFile);
-                console.log(this.selectedFile);
                 var result = await fetch('./upload?id=' + this.selectedFile.name, {
                     method: 'POST',
                     body: formData
