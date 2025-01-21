@@ -88,20 +88,27 @@
                 selectedFile: null,
                 popContent:'',
                 timer:null,
-                ip:'0.0.0.0'
+                ip:'0.0.0.0',
+                uid:'',
             }
         },
         created() {
+         
+            this.document = document.querySelector('#frameName');
+            this.uid=new URLSearchParams(location.search).get('uid');
+            if(!this.uid){
+                this.uid=new Date().getTime();
+                location.href=location.href+'?uid='+this.uid;
+            }
             this.getIp();
             this.getAllData();
-            this.document = document.querySelector('#frameName');
         },
         methods: {
             handleFileUpload(event) {
                 this.selectedFile = event.target.files[0];
             },
             async getAllData() {
-                var all = await fetch('./history');
+                var all = await fetch('./history'+'?uid='+this.uid);
                 console.log(all)
                 this.items = await all.json();
             },
@@ -142,7 +149,7 @@
                     return
                 }
                 console.log(this.value);
-                fetch('./savetext', {
+                fetch('./savetext'+'?uid='+this.uid, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -155,7 +162,7 @@
                 })
             },
             clear() {
-                fetch('./clear').then(res => {
+                fetch('./clear'+'?uid='+this.uid).then(res => {
                     this.getAllData();
                 })
             },
@@ -166,7 +173,7 @@
                 /* formData格式提交： */
                 const formData = new FormData();
                 formData.append('myFiles', this.selectedFile);
-                var result = await fetch('./upload?id=' + this.selectedFile.name, {
+                var result = await fetch('./upload?id=' + this.selectedFile.name+'&uid='+this.uid, {
                     method: 'POST',
                     body: formData
                 })

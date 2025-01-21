@@ -25,6 +25,7 @@ app.post("/upload",async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send("No files were uploaded.");
     }
+    const uid= req.query.uid
     let fileName=req.query.id;
     var extension = fileName.substring(fileName.lastIndexOf(".") + 1); // "txt"
     var nameWithoutExtension=fileName.substring(fileName.lastIndexOf("\\") + 1);
@@ -44,29 +45,35 @@ app.post("/upload",async (req, res) => {
         });
     }
     const data=await fs.readFileSync('./db.json', { encoding: 'utf8', flag: 'r' });
-    const saveInfo= JSON.parse(data).concat([{type:'file',content: fileName}]);
+    const saveInfo= JSON.parse(data).concat([{type:'file',content: fileName,uid:uid}]);
     await fs.writeFileSync('./db.json',JSON.stringify( saveInfo), { encoding: 'utf8'});
     res.setHeader('content-type','application/json')
     res.send("Files uploaded successfully!");
 });
 
 app.get("/history",async (req, res) => {
-    const data=await fs.readFileSync('./db.json', { encoding: 'utf8', flag: 'r' })
+    const uid= req.query.uid
+    let data=await fs.readFileSync('./db.json', { encoding: 'utf8', flag: 'r' })
     res.setHeader('content-type','application/json')
-    res.send(data);
+    data=JSON.parse(data)?.filter(item => item.uid === uid);
+    res.send(JSON.stringify(data));
 });
 
 app.post("/savetext",async (req, res) => {
     var text= req.body.text;
+    const uid= req.query.uid
     const data=await fs.readFileSync('./db.json', { encoding: 'utf8', flag: 'r' });
-    const saveInfo= JSON.parse(data).concat([{type:'text',content: text}]);
+    const saveInfo= JSON.parse(data).concat([{type:'text',content: text,uid:uid}]);
     await fs.writeFileSync('./db.json',JSON.stringify( saveInfo), { encoding: 'utf8'});
     res.setHeader('content-type','application/json')
     res.send("Files uploaded successfully!");
 })
 
 app.get("/clear",async (req, res) => {
-    await fs.writeFileSync('./db.json',JSON.stringify( []), { encoding: 'utf8'});
+    const uid= req.query.uid
+    const data=await fs.readFileSync('./db.json', { encoding: 'utf8', flag: 'r' });
+    const allMatch = JSON.parse(data)?.filter(item => item.uid !== uid);
+    await fs.writeFileSync('./db.json',JSON.stringify(allMatch), { encoding: 'utf8'});
     res.setHeader('content-type','application/json')
     res.send("Files uploaded successfully!");
 });
