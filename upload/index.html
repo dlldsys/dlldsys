@@ -42,6 +42,9 @@
 <body>
     <h1>File Upload</h1>
     <div id="hello-vue" class="demo">
+        <a :href="'http://'+ip+':5432'" target="_blank">http://{{ip}}:5432</a>
+        <br>
+        <br>
         <div>
             清空所有内容
             <button @click="clear()">清空</button>
@@ -84,10 +87,12 @@
                 value: '',
                 selectedFile: null,
                 popContent:'',
-                timer:null
+                timer:null,
+                ip:'0.0.0.0'
             }
         },
         created() {
+            this.getIp();
             this.getAllData();
             this.document = document.querySelector('#frameName');
         },
@@ -168,6 +173,13 @@
                 if (result) {
                     this.getAllData();
                 }
+            },
+            getIp(){
+                fetch('./ip').then(res=>{
+                    res.text().then(text=>{
+                       this.ip=  JSON.parse(text).ip
+                    })
+                })
             }
         }
     }
