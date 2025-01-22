@@ -24,18 +24,19 @@
         padding: 4px 30px;
         cursor: pointer;
     }
-    .popContent{
+
+    .popContent {
         position: absolute;
-    left: 50%;
-    top: 30%;
-    background: white;
-    padding: 40px 60px;
-    border: 1px solid skyblue;
-    border-radius: 10px;
-    background-color: #555555;
-    color: white;
-    opacity: .7;
-    transform: translate(-50%, -50%);
+        left: 50%;
+        top: 30%;
+        background: white;
+        padding: 40px 60px;
+        border: 1px solid skyblue;
+        border-radius: 10px;
+        background-color: #555555;
+        color: white;
+        opacity: .7;
+        transform: translate(-50%, -50%);
     }
 </style>
 
@@ -64,16 +65,38 @@
                 <div v-if="item.type!='text'">
                     <div @click="download(item.content)" class="action">下载</div> 文件名称: {{item.content}}
                 </div>
-                <div v-else @click="copy(item.content)">  <span class="action"> 点击复制文本内容:</span><div :id="'content'+index" v-html="(item.content?.slice(0,80)+'...').replace(/\n/g, '<br>')"> </div>
+                <div v-else @click="copy(item.content)"> <span class="action"> 点击复制文本内容:</span>
+                    <div :id="'content'+index" v-html="(item.content?.slice(0,80)+'...').replace(/\n/g, '<br>')"> </div>
                 </div>
             </div>
         </div>
         <iframe width="1%" height="2px" v-if="!init" id="frameName" src="" frameborder="0" name="frameName"></iframe>
         <div v-if="popContent" class="popContent">
             {{popContent}}
+            <div v-if="popContent=='上传中'" style="    display: flex;
+                align-items: center;
+                justify-content: space-evenly;
+                padding-top: 20px;">
+                <svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#fff">
+                    <g fill="none" fill-rule="evenodd">
+                        <g transform="translate(1 1)" stroke-width="2">
+                            <circle stroke-opacity=".5" cx="18" cy="18" r="18"/>
+                            <path d="M36 18c0-9.94-8.06-18-18-18">
+                                <animateTransform
+                                    attributeName="transform"
+                                    type="rotate"
+                                    from="0 18 18"
+                                    to="360 18 18"
+                                    dur="1s"
+                                    repeatCount="indefinite"/>
+                            </path>
+                        </g>
+                    </g>
+                </svg>
+            </div>
         </div>
     </div>
-  
+
 </body>
 <script type="text/javascript">
 
@@ -86,19 +109,19 @@
                 init: false,
                 value: '',
                 selectedFile: null,
-                popContent:'',
-                timer:null,
-                ip:'0.0.0.0',
-                uid:'',
+                popContent: '',
+                timer: null,
+                ip: '0.0.0.0',
+                uid: '',
             }
         },
         created() {
-         
+
             this.document = document.querySelector('#frameName');
-            this.uid=new URLSearchParams(location.search).get('uid');
-            if(!this.uid){
-                this.uid=new Date().getTime();
-                location.href=location.href+'?uid='+this.uid;
+            this.uid = new URLSearchParams(location.search).get('uid');
+            if (!this.uid) {
+                this.uid = new Date().getTime();
+                location.href = location.href + '?uid=' + this.uid;
             }
             this.getIp();
             this.getAllData();
@@ -108,7 +131,7 @@
                 this.selectedFile = event.target.files[0];
             },
             async getAllData() {
-                var all = await fetch('./history'+'?uid='+this.uid);
+                var all = await fetch('./history' + '?uid=' + this.uid);
                 console.log(all)
                 this.items = await all.json();
             },
@@ -136,12 +159,12 @@
                 link.download = file;
                 link.click();
             },
-            copy(text) { 
+            copy(text) {
                 copyToClipboard(text)
-                this.popContent='已复制';
+                this.popContent = '已复制';
                 clearTimeout(this.timer);
-                this.timer=setTimeout(() => {
-                    this.popContent='';
+                this.timer = setTimeout(() => {
+                    this.popContent = '';
                 }, 1500);
             },
             settext() {
@@ -149,7 +172,7 @@
                     return
                 }
                 console.log(this.value);
-                fetch('./savetext'+'?uid='+this.uid, {
+                fetch('./savetext' + '?uid=' + this.uid, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -162,7 +185,7 @@
                 })
             },
             clear() {
-                fetch('./clear'+'?uid='+this.uid).then(res => {
+                fetch('./clear' + '?uid=' + this.uid).then(res => {
                     this.getAllData();
                 })
             },
@@ -173,18 +196,24 @@
                 /* formData格式提交： */
                 const formData = new FormData();
                 formData.append('myFiles', this.selectedFile);
-                var result = await fetch('./upload?id=' + this.selectedFile.name+'&uid='+this.uid, {
+                this.popContent = '上传中';
+                var result = await fetch('./upload?id=' + this.selectedFile.name + '&uid=' + this.uid, {
                     method: 'POST',
                     body: formData
                 })
                 if (result) {
+                    this.popContent = '上传成功';
+                    clearTimeout(this.timer);
+                    this.timer = setTimeout(() => {
+                        this.popContent = '';
+                    }, 1500);
                     this.getAllData();
                 }
             },
-            getIp(){
-                fetch('./ip').then(res=>{
-                    res.text().then(text=>{
-                       this.ip=  JSON.parse(text).ip
+            getIp() {
+                fetch('./ip').then(res => {
+                    res.text().then(text => {
+                        this.ip = JSON.parse(text).ip
                     })
                 })
             }
